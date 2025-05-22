@@ -14,7 +14,7 @@
 ## 📸 Screenshots
 | Tela Inicial | Adicionar Matéria | Progresso |
 |--------------|-------------------|-----------|
-| ![Feed](screenshots/feed.png) | ![Add](screenshots/add.png) | ![Details](screenshots/details.png) |
+| ![Feed](imagens/Feed.png) | ![Add](imagens/NovaTarefa.png) | ![Details](imagens/Tarefa.png) |
 
 ## 🧩 Estrutura do Projeto
 

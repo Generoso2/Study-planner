@@ -1,56 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, Vibration } from 'react-native';
-import { Accelerometer } from 'expo-sensors';
+import React, { useState } from 'react';
+import { 
+  View, 
+  Text, 
+  Switch, 
+  StyleSheet, 
+  Button, 
+  Vibration, 
+  Platform,
+  Alert 
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+const cores = {
+  primaria: '#6E3AFF',    // Roxo moderno
+  secundaria: '#FF7D53',  // Laranja vibrante
+  fundo: '#F8F9FA',       // Cinza claro
+  texto: '#2E3440',       // Azul escuro
+  sucesso: '#4CAF50',     // Verde
+  alerta: '#FFC107',      // Amarelo
+  erro: '#F44336'         // Vermelho
+};
 
 export default function Configuracoes() {
   const [vibracaoAtiva, setVibracaoAtiva] = useState(true);
-  const [acelerometro, setAcelerometro] = useState({});
 
-  useEffect(() => {
-    Accelerometer.setUpdateInterval(1000);
-    const subscription = Accelerometer.addListener(data => {
-      setAcelerometro(data);
-      // Vibra se o dispositivo for chacoalhado (requisito de sensor)
-      if (Math.abs(data.x) > 1.5 || Math.abs(data.y) > 1.5) {
-        if (vibracaoAtiva) Vibration.vibrate(200);
+  const testarVibracao = () => {
+    if (vibracaoAtiva) {
+      // Padrão de vibração otimizado para Android/iOS
+      if (Platform.OS === 'android') {
+        Vibration.vibrate([0, 500, 200, 500]); // Vibrar 2x no Android
+      } else {
+        Vibration.vibrate(200); // Vibração única no iOS
       }
-    });
-
-    return () => subscription.remove();
-  }, [vibracaoAtiva]);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.option}>
-        <Text>Ativar vibração</Text>
-        <Switch 
+      <View style={styles.header}>
+        <Ionicons name="settings" size={28} color="#6200ee" />
+        <Text style={styles.headerText}>Configurações</Text>
+      </View>
+
+      <View style={styles.optionCard}>
+        <View style={styles.option}>
+          <Ionicons name="phone-vibrate" size={20} color="#333" />
+          <Text style={styles.optionText}>Ativar vibração</Text>
+        </View>
+        <Switch
           value={vibracaoAtiva}
           onValueChange={setVibracaoAtiva}
+          trackColor={{ false: '#f5f5f5', true: '#6200ee' }}
         />
       </View>
 
-      <View style={styles.sensorData}>
-        <Text>Acelerômetro:</Text>
-        <Text>X: {acelerometro.x?.toFixed(2) || 0}</Text>
-        <Text>Y: {acelerometro.y?.toFixed(2) || 0}</Text>
-        <Text>Z: {acelerometro.z?.toFixed(2) || 0}</Text>
-      </View>
+      <Button
+        title="Testar Vibração"
+        onPress={testarVibracao}
+        color="#6200ee"
+        disabled={!vibracaoAtiva}
+      />
 
-      <Text style={styles.hint}>Chacoalhe o dispositivo para testar!</Text>
+      {Platform.OS === 'android' && (
+        <Text style={styles.tip}>
+          '🔄 Se não vibrar, verifique: Configurações {'>'} Sons {'>'} Vibrar ao tocar'
+        </Text>
+      )}
     </View>
   );
 }
 
+// ESTILOS (adicione no final do arquivo)
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  option: {
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginLeft: 10,
+    color: '#6200ee',
+  },
+  optionCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
   },
-  sensorData: { marginTop: 30 },
-  hint: { marginTop: 20, fontStyle: 'italic', color: '#666' },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  tip: {
+    marginTop: 20,
+    color: '#666',
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
 });

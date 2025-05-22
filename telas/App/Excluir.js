@@ -1,38 +1,65 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Vibration } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Button, Vibration, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { excluirMateria, atualizarMateria } from '../../config/bancolocal';
 
 export default function Excluir({ route, navigation }) {
-  const { materia } = route.params;
+  const { materia: materiaInicial } = route.params;
+  const [materia, setMateria] = useState(materiaInicial);
+  const [editando, setEditando] = useState(false);
 
-  const handleExcluir = () => {
-    Vibration.vibrate(100); // Vibração mais longa para ação importante
-    alert('Funcionalidade de excluir será implementada depois!');
+  const handleExcluir = async () => {
+    Vibration.vibrate(100);
+    const sucesso = await excluirMateria(materia.id);
+    if (sucesso) navigation.goBack();
+  };
+
+  const handleSalvar = async () => {
+    Vibration.vibrate(50);
+    const sucesso = await atualizarMateria(materia.id, { nome: materia.nome });
+    if (sucesso) setEditando(false);
   };
 
   return (
     <View style={styles.container}>
-      <Ionicons name="book" size={60} color="#6200ee" style={styles.icon} />
-      <Text style={styles.title}>{materia.nome}</Text>
-      
-      <View style={styles.details}>
-        <Text style={styles.detailText}>Horas estudadas: 0</Text>
-        <Text style={styles.detailText}>Último estudo: --/--/----</Text>
-      </View>
+      {editando ? (
+        <TextInput
+          style={styles.input}
+          value={materia.nome}
+          onChangeText={(text) => setMateria({...materia, nome: text})}
+        />
+      ) : (
+        <>
+          <Ionicons name="book" size={60} color="#6200ee" style={styles.icon} />
+          <Text style={styles.title}>{materia.nome}</Text>
+        </>
+      )}
 
       <View style={styles.buttons}>
-        <Button title="Voltar" onPress={() => navigation.goBack()} />
-        <Button title="Excluir" color="red" onPress={handleExcluir} />
+        <Button 
+          title={editando ? "Cancelar" : "Editar"} 
+          onPress={() => {
+            setEditando(!editando);
+            if (editando) setMateria(materiaInicial);
+          }} 
+        />
+        {editando ? (
+          <Button title="Salvar" onPress={handleSalvar} />
+        ) : (
+          <Button title="Excluir" color="red" onPress={handleExcluir} />
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  icon: { alignSelf: 'center', margin: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center' },
-  details: { marginVertical: 30 },
-  detailText: { fontSize: 16, marginBottom: 10 },
-  buttons: { marginTop: 20, gap: 10 },
+  // ... (estilos anteriores permanecem)
+  input: {
+    borderWidth: 1,
+    padding: 15,
+    fontSize: 18,
+    borderRadius: 8,
+    marginVertical: 20,
+  },
 });

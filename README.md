@@ -2,7 +2,6 @@
 
 # 📚 Organizador de Estudos
 
-![Capa do Projeto](https://i.imgur.com/JqQZbLg.png)  
 *Um aplicativo para gerenciar suas matérias e horas de estudo*
 
 ## 🚀 Funcionalidades

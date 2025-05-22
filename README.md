@@ -19,13 +19,6 @@
 - React Native Chart Kit  
 - AsyncStorage  
 
-## 📸 Screenshots
-| Tela Inicial | Adicionar Matéria | Progresso |
-|--------------|-------------------|-----------|
-| ![Feed](screenshots/feed.png) | ![Add](screenshots/add.png) | ![Details](screenshots/details.png) |
-
-## 🧩 Estrutura do Projeto
-
 organizador-estudos/
 ├── assets/
 │ ├── background.jpg

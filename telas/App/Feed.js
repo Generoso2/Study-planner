@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Vibration } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { carregarMaterias } from '../../config/bancolocal';
 
 export default function Feed({ navigation }) {
@@ -11,16 +12,16 @@ export default function Feed({ navigation }) {
   };
 
   useEffect(() => {
-    // Carrega os dados quando a tela é montada
     carregarDados();
-
-    // Adiciona listener para quando a tela receber foco
-    const unsubscribe = navigation.addListener('focus', () => {
-      carregarDados();
-    });
-
+    const unsubscribe = navigation.addListener('focus', carregarDados);
     return unsubscribe;
   }, [navigation]);
+
+  const handlePressItem = (item) => {
+    // Vibração de 50ms (requisito do projeto)
+    Vibration.vibrate(50);
+    navigation.navigate('Excluir', { materia: item });
+  };
 
   return (
     <View style={styles.container}>
@@ -28,9 +29,20 @@ export default function Feed({ navigation }) {
         data={materias}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <Text style={styles.item}>{item.nome}</Text>
+          <TouchableOpacity 
+            style={styles.item} 
+            onPress={() => handlePressItem(item)}
+          >
+            <Ionicons name="book" size={20} color="#444" />
+            <Text style={styles.itemText}>{item.nome}</Text>
+          </TouchableOpacity>
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Nenhuma matéria cadastrada</Text>}
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <Ionicons name="sad-outline" size={40} color="#ccc" />
+            <Text style={styles.emptyText}>Nenhuma matéria cadastrada</Text>
+          </View>
+        }
       />
       <Button
         title="Adicionar Matéria"
@@ -42,6 +54,15 @@ export default function Feed({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16 },
-  item: { padding: 12, fontSize: 16 },
-  empty: { textAlign: 'center', marginTop: 20 },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    marginVertical: 5,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+  },
+  itemText: { marginLeft: 10, fontSize: 16 },
+  empty: { alignItems: 'center', marginTop: 50 },
+  emptyText: { color: '#888', marginTop: 10 },
 });
